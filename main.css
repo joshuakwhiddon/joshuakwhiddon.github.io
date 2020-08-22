@@ -1,5 +1,15 @@
-div{
-  background-color: azure;
-  border: 1px solid aquamarine;
-  padding: 30px;
+#josh{
+    text-align: center;
+    background-color:  #b3d9ff;
+    padding: 20px;
+    font: medium;
+}
+body{
+    background-color: aliceblue;
+}
+#about{
+    text-align: center;
+    border-width: 5px ;
+    border-color: #b3d9ff;
+    
 }
