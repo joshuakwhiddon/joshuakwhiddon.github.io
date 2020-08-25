@@ -1,8 +1,9 @@
-#josh{
+#head{
+    background-image: url(images/code3.jpg);
+    padding: 200px;
     text-align: center;
-    background-color:  #b3d9ff;
-    padding: 20px;
-    font: medium;
+    text-shadow: 20px;
+    color: white;
 }
 body{
     background-color: aliceblue;
@@ -11,5 +12,5 @@ body{
     text-align: center;
     border-width: 5px ;
     border-color: #b3d9ff;
-    
+
 }
