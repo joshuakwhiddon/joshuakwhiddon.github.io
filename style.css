@@ -1,0 +1,25 @@
+#Link_tree{
+    padding: auto;
+    text-align: center;
+    background-color: grey;
+    margin-top: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+#link{
+    padding-left: 20px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    font-size: large;
+    
+}
+#title{
+    text-align: center;
+}
+#about{
+    background-color: lightgray;
+}
+#about_body{
+    text-align: center;
+    font-size: large;
+}
