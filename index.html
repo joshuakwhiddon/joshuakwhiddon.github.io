@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Hub | Custom Portal</title>
+    <title>Vault Portal | Brave Search</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -13,7 +13,7 @@
             --bg-gradient: radial-gradient(circle at top left, #1a1c2c 0%, #0a0a0f 100%);
             --glass-blur: 16px;
             --glass-opacity: 0.03;
-            --accent-color: #a855f7; /* Purple 500 */
+            --accent-color: #ff5100; /* Brave Orange Default */
             --border-opacity: 0.08;
             --tile-roundness: 2rem;
         }
@@ -40,12 +40,15 @@
         }
 
         .bento-card:hover {
-            transform: scale(1.02);
+            transform: scale(1.01);
             border-color: var(--accent-color);
-            box-shadow: 0 0 20px -5px var(--accent-color);
+            box-shadow: 0 0 30px -10px var(--accent-color);
         }
 
-        /* Settings Panel Sidebar */
+        .search-input:focus {
+            outline: none;
+        }
+
         #settings-panel {
             transform: translateX(100%);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -60,63 +63,75 @@
 <body class="p-4 md:p-8 overflow-hidden">
 
     <div class="max-w-6xl w-full">
-        <header class="flex justify-between items-end mb-12 px-2">
+        <header class="flex justify-between items-end mb-8 px-2">
             <div>
                 <h1 class="text-4xl font-extrabold tracking-tight mb-2">Vault Portal</h1>
                 <p id="time-display" class="text-white/40 font-mono font-medium tracking-wider uppercase"></p>
             </div>
-            <button onclick="toggleSettings()" class="p-3 bg-white/5 rounded-full hover:bg-white/10 transition-colors border border-white/10 group">
+            <button onclick="toggleSettings()" class="p-3 bg-white/5 rounded-full hover:bg-white/10 border border-white/10 group">
                 <i data-lucide="settings" class="w-6 h-6 group-hover:rotate-90 transition-transform duration-500"></i>
             </button>
         </header>
 
-        <div id="grid-container" class="grid grid-cols-1 md:grid-cols-6 md:grid-rows-3 gap-6 h-[70vh]">
+        <div id="grid-container" class="grid grid-cols-1 md:grid-cols-6 md:grid-rows-4 gap-5">
             
+            <div class="bento-card md:col-span-6 p-6 flex items-center gap-4 group">
+                <div class="pl-4 text-[#ff5100] group-hover:scale-110 transition-transform">
+                    <i data-lucide="search" class="w-6 h-6"></i>
+                </div>
+                <form action="https://search.brave.com/search" method="GET" class="flex-1">
+                    <input type="text" name="q" placeholder="Search with Brave..." 
+                           class="search-input w-full bg-transparent border-none py-4 text-xl font-medium placeholder-white/20 text-white rounded-xl px-4">
+                </form>
+                <div class="pr-4 hidden md:flex items-center gap-2">
+                    <span class="text-[10px] font-bold py-1 px-3 rounded-full border border-[#ff5100]/30 text-[#ff5100] tracking-widest uppercase">Brave Active</span>
+                </div>
+            </div>
+
             <a href="https://proton.me" class="bento-card md:col-span-3 md:row-span-2 p-10 flex flex-col justify-between group">
-                <div class="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6">
+                <div class="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6 border border-purple-500/30">
                     <i data-lucide="shield-check" class="text-purple-400 w-10 h-10"></i>
                 </div>
                 <div>
-                    <h2 class="text-3xl font-bold mb-3">Proton Mail</h2>
-                    <p class="text-white/50 text-lg leading-relaxed">End-to-end encrypted inbox.</p>
+                    <h2 class="text-3xl font-bold mb-2">Proton</h2>
+                    <p class="text-white/50 text-lg">Identity & Communications</p>
                 </div>
             </a>
 
             <a href="https://drive.proton.me" class="bento-card md:col-span-3 p-6 flex items-center gap-6">
-                <div class="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                <div class="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center border border-blue-500/30">
                     <i data-lucide="hard-drive" class="text-blue-400 w-7 h-7"></i>
                 </div>
                 <div class="flex-1">
-                    <h2 class="font-bold text-xl">Cloud Vault</h2>
+                    <h2 class="font-bold text-xl text-white/90">Cloud Vault</h2>
                     <p class="text-white/40 text-sm">drive.proton.me</p>
                 </div>
-                <i data-lucide="chevron-right" class="text-white/20"></i>
+                <i data-lucide="external-link" class="text-white/20 w-4 h-4"></i>
             </a>
 
             <a href="https://ente.io" class="bento-card md:col-span-1.5 p-6 flex flex-col justify-center items-center group">
                 <i data-lucide="image" class="text-orange-400 w-8 h-8 mb-4"></i>
-                <span class="font-bold">Photos</span>
+                <span class="font-bold text-white/80">Photos</span>
             </a>
 
             <a href="https://auth.ente.io" class="bento-card md:col-span-1.5 p-6 flex flex-col justify-center items-center group">
                 <i data-lucide="key-round" class="text-cyan-400 w-8 h-8 mb-4"></i>
-                <span class="font-bold">2FA Auth</span>
+                <span class="font-bold text-white/80">2FA Auth</span>
             </a>
 
             <a href="https://lumo.proton.me" class="bento-card md:col-span-6 p-8 flex items-center justify-between group">
                 <div class="flex items-center gap-6">
-                    <div class="w-14 h-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center">
+                    <div class="w-14 h-14 bg-indigo-500/20 rounded-2xl flex items-center justify-center border border-indigo-500/30">
                         <i data-lucide="sparkles" class="text-indigo-400 w-8 h-8"></i>
                     </div>
                     <div>
-                        <h2 class="text-xl font-extrabold italic">Lumo Intelligence</h2>
-                        <p class="text-white/40">Privacy-focused generative workspace</p>
+                        <h2 class="text-xl font-extrabold italic text-white/90">Lumo Intelligence</h2>
+                        <p class="text-white/40">Secure generative workspace</p>
                     </div>
                 </div>
-                <div class="hidden md:block h-px flex-1 mx-10 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
                 <div class="flex items-center gap-2 text-indigo-300">
-                    <span class="text-xs font-bold tracking-[0.2em] uppercase">Connect</span>
-                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                    <span class="text-xs font-bold tracking-[0.2em] uppercase">Launch</span>
+                    <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
                 </div>
             </a>
         </div>
@@ -124,58 +139,33 @@
 
     <aside id="settings-panel" class="fixed top-0 right-0 h-full w-80 p-8 shadow-2xl border-l border-white/10 z-50 overflow-y-auto">
         <div class="flex justify-between items-center mb-8">
-            <h3 class="text-xl font-bold">Preferences</h3>
-            <button onclick="toggleSettings()"><i data-lucide="x" class="w-6 h-6"></i></button>
+            <h3 class="text-xl font-bold">Portal Setup</h3>
+            <button onclick="toggleSettings()"><i data-lucide="x" class="w-6 h-6 text-white/40 hover:text-white transition-colors"></i></button>
         </div>
 
         <div class="space-y-8">
             <section>
                 <label class="text-xs font-bold text-white/40 uppercase tracking-widest block mb-4">Accent Theme</label>
-                <div class="flex gap-2">
-                    <button onclick="setTheme('#a855f7')" class="w-8 h-8 rounded-full bg-purple-500 border-2 border-white/20"></button>
-                    <button onclick="setTheme('#3b82f6')" class="w-8 h-8 rounded-full bg-blue-500"></button>
-                    <button onclick="setTheme('#10b981')" class="w-8 h-8 rounded-full bg-emerald-500"></button>
-                    <button onclick="setTheme('#f43f5e')" class="w-8 h-8 rounded-full bg-rose-500"></button>
+                <div class="flex flex-wrap gap-3">
+                    <button onclick="setTheme('#ff5100')" class="w-10 h-10 rounded-xl bg-[#ff5100] border-2 border-white/20"></button>
+                    <button onclick="setTheme('#a855f7')" class="w-10 h-10 rounded-xl bg-purple-500"></button>
+                    <button onclick="setTheme('#3b82f6')" class="w-10 h-10 rounded-xl bg-blue-500"></button>
+                    <button onclick="setTheme('#10b981')" class="w-10 h-10 rounded-xl bg-emerald-500"></button>
                 </div>
             </section>
-
             <section>
                 <label class="text-xs font-bold text-white/40 uppercase tracking-widest block mb-2">Glass Blur</label>
-                <input type="range" min="0" max="40" value="16" class="w-full" oninput="updateVar('--glass-blur', this.value + 'px')">
+                <input type="range" min="0" max="40" value="16" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer" oninput="updateVar('--glass-blur', this.value + 'px')">
             </section>
-
-            <section>
-                <label class="text-xs font-bold text-white/40 uppercase tracking-widest block mb-2">Card Opacity</label>
-                <input type="range" min="0" max="0.5" step="0.01" value="0.03" class="w-full" oninput="updateVar('--glass-opacity', this.value)">
-            </section>
-
             <section>
                 <label class="text-xs font-bold text-white/40 uppercase tracking-widest block mb-2">Corner Radius</label>
-                <input type="range" min="0" max="3" step="0.1" value="2" class="w-full" oninput="updateVar('--tile-roundness', this.value + 'rem')">
-            </section>
-
-             <section>
-                <label class="text-xs font-bold text-white/40 uppercase tracking-widest block mb-2">Grid Density</label>
-                <input type="range" min="10" max="40" step="2" value="24" class="w-full" oninput="document.getElementById('grid-container').style.gap = this.value + 'px'">
-            </section>
-
-            <section>
-                <label class="text-xs font-bold text-white/40 uppercase tracking-widest block mb-4">Background</label>
-                <select class="w-full bg-white/10 border border-white/10 rounded-lg p-2 text-sm" onchange="updateVar('--bg-gradient', this.value)">
-                    <option value="radial-gradient(circle at top left, #1a1c2c 0%, #0a0a0f 100%)">Cyber Night</option>
-                    <option value="linear-gradient(135deg, #434343 0%, #000000 100%)">Absolute Stealth</option>
-                    <option value="linear-gradient(135deg, #2b5876 0%, #4e4376 100%)">Deep Ocean</option>
-                    <option value="radial-gradient(circle, #2e1065 0%, #020617 100%)">Void Purple</option>
-                </select>
+                <input type="range" min="0" max="3" step="0.1" value="2" class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer" oninput="updateVar('--tile-roundness', this.value + 'rem')">
             </section>
         </div>
     </aside>
 
     <script>
-        // Initialize Icons
         lucide.createIcons();
-
-        // Time Update
         function updateTime() {
             const now = new Date();
             const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -184,19 +174,9 @@
         }
         setInterval(updateTime, 1000);
         updateTime();
-
-        // UI Interactions
-        function toggleSettings() {
-            document.getElementById('settings-panel').classList.toggle('open');
-        }
-
-        function updateVar(name, val) {
-            document.documentElement.style.setProperty(name, val);
-        }
-
-        function setTheme(color) {
-            updateVar('--accent-color', color);
-        }
+        function toggleSettings() { document.getElementById('settings-panel').classList.toggle('open'); }
+        function updateVar(name, val) { document.documentElement.style.setProperty(name, val); }
+        function setTheme(color) { updateVar('--accent-color', color); }
     </script>
 </body>
 </html>
