@@ -3,171 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vault Portal | Internal Search</title>
+    <title>Vault Portal | Brave Search</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
         
         :root {
             --bg-gradient: radial-gradient(circle at top left, #1a1c2c 0%, #0a0a0f 100%);
             --glass-blur: 16px;
-            --glass-opacity: 0.03;
+            --glass-opacity: 0.05;
             --accent-color: #ff5100; 
             --tile-roundness: 2rem;
         }
 
         body {
-            background-image: var(--bg-gradient);
+            /* Applied via JS for maximum compatibility with variables */
             background-attachment: fixed;
             min-height: 100vh;
-            overflow: hidden; /* We handle scrolling inside the search view */
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: white;
-            transition: background-image 0.5s ease;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background 0.5s ease;
         }
 
         .bento-card {
             background: rgba(255, 255, 255, var(--glass-opacity));
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: var(--tile-roundness);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Search View Transition */
-        #search-view {
-            transform: translateY(100%);
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-            background: #000;
-        }
-        #search-view.active { transform: translateY(0); }
-
-        #main-dashboard {
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-        #main-dashboard.hidden-view {
-            opacity: 0;
-            transform: scale(0.95);
-            pointer-events: none;
+        .bento-card:hover {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 20px -5px var(--accent-color);
+            transform: translateY(-2px);
         }
 
-        #settings-panel {
-            transform: translateX(100%);
-            transition: transform 0.4s ease;
-            background: rgba(10, 10, 15, 0.95);
+        #settings-sidebar {
+            position: fixed;
+            right: -320px;
+            top: 0;
+            width: 320px;
+            height: 100%;
+            background: rgba(10, 10, 15, 0.98);
             backdrop-filter: blur(20px);
-            z-index: 100;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            transition: right 0.3s ease-in-out;
+            z-index: 2000;
+            padding: 2rem;
         }
-        #settings-panel.open { transform: translateX(0); }
+        #settings-sidebar.open { right: 0; }
+        
+        .custom-range {
+            height: 6px;
+            appearance: none;
+            background: rgba(255,255,255,0.1);
+            border-radius: 5px;
+            outline: none;
+        }
+        .custom-range::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: var(--accent-color);
+            border-radius: 50%;
+            cursor: pointer;
+        }
     </style>
 </head>
-<body class="flex items-center justify-center">
+<body class="p-6 md:p-12">
 
-    <div id="main-dashboard" class="max-w-6xl w-full p-6 md:p-12 z-10">
-        <header class="flex justify-between items-end mb-8">
+    <div class="max-w-6xl w-full">
+        <header class="flex justify-between items-center mb-10 px-2">
             <div>
-                <h1 class="text-4xl font-extrabold tracking-tight mb-2">Vault Portal</h1>
-                <p id="time-display" class="text-white/40 font-mono text-sm tracking-wider uppercase"></p>
+                <h1 class="text-3xl font-extrabold tracking-tight">Vault Portal</h1>
+                <p id="clock" class="text-white/40 font-mono text-sm uppercase tracking-widest mt-1"></p>
             </div>
-            <button onclick="toggleSettings()" class="p-3 bg-white/5 rounded-full border border-white/10">
+            <button onclick="toggleSettings()" class="p-3 bg-white/5 rounded-full border border-white/10 hover:bg-white/20 transition-all">
                 <i data-lucide="settings" class="w-6 h-6"></i>
             </button>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-6 gap-5 h-auto">
-            <div class="bento-card md:col-span-6 p-6 flex items-center gap-4 group cursor-pointer" onclick="focusSearch()">
-                <i data-lucide="search" class="w-6 h-6 text-[#ff5100]"></i>
-                <input id="dash-search-input" type="text" placeholder="Search with Brave..." 
-                       class="w-full bg-transparent border-none py-2 text-xl focus:outline-none placeholder-white/20">
-                <span class="hidden md:block text-[10px] font-bold py-1 px-3 rounded-full border border-[#ff5100]/30 text-[#ff5100]">PRESS ENTER</span>
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
+            <div class="bento-card md:col-span-6 p-6 flex items-center gap-4">
+                <i data-lucide="search" class="text-[#ff5100]"></i>
+                <form action="https://search.brave.com/search" method="GET" target="_blank" class="w-full">
+                    <input name="q" type="text" placeholder="Search with Brave..." 
+                           class="w-full bg-transparent border-none text-xl focus:outline-none placeholder-white/20">
+                </form>
             </div>
 
-            <a href="https://proton.me" class="bento-card md:col-span-3 p-8 flex flex-col justify-between min-h-[200px]">
-                <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center"><i data-lucide="shield" class="text-purple-400"></i></div>
+            <a href="https://proton.me" target="_blank" class="bento-card md:col-span-3 p-8 min-h-[220px] flex flex-col justify-between group">
+                <div class="flex justify-between items-start">
+                    <i data-lucide="shield" class="text-purple-400 w-10 h-10"></i>
+                    <i data-lucide="external-link" class="w-4 h-4 opacity-0 group-hover:opacity-40 transition-opacity"></i>
+                </div>
                 <h2 class="text-2xl font-bold">Proton Mail</h2>
             </a>
-            <a href="https://drive.proton.me" class="bento-card md:col-span-3 p-8 flex items-center gap-6">
-                <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center"><i data-lucide="hard-drive" class="text-blue-400"></i></div>
-                <h2 class="text-xl font-bold">Cloud Vault</h2>
+
+            <a href="https://drive.proton.me" target="_blank" class="bento-card md:col-span-3 p-8 flex items-center gap-6 group">
+                <i data-lucide="hard-drive" class="text-blue-400 w-8 h-8"></i>
+                <div class="flex-1">
+                    <h2 class="text-xl font-bold">Proton Drive</h2>
+                    <p class="text-white/30 text-sm italic">drive.proton.me</p>
+                </div>
+                <i data-lucide="external-link" class="w-4 h-4 opacity-0 group-hover:opacity-40 transition-opacity"></i>
             </a>
-            <a href="https://ente.io" class="bento-card md:col-span-3 p-8 flex items-center gap-4">
+
+            <a href="https://ente.io" target="_blank" class="bento-card md:col-span-2 p-8 flex flex-col items-center text-center gap-4">
                 <i data-lucide="image" class="text-orange-400"></i>
                 <span class="font-bold">Ente Photos</span>
             </a>
-            <a href="https://lumo.proton.me" class="bento-card md:col-span-3 p-8 flex items-center gap-4">
+
+            <a href="https://auth.ente.io" target="_blank" class="bento-card md:col-span-2 p-8 flex flex-col items-center text-center gap-4">
+                <i data-lucide="key" class="text-cyan-400"></i>
+                <span class="font-bold">2FA Auth</span>
+            </a>
+
+            <a href="https://lumo.proton.me" target="_blank" class="bento-card md:col-span-2 p-8 flex flex-col items-center text-center gap-4">
                 <i data-lucide="sparkles" class="text-indigo-400"></i>
                 <span class="font-bold">Lumo AI</span>
             </a>
         </div>
     </div>
 
-    <div id="search-view" class="fixed inset-0 z-50 flex flex-col">
-        <nav class="p-4 bg-black/80 border-b border-white/10 backdrop-blur-md flex items-center gap-4">
-            <button onclick="closeSearch()" class="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors border border-white/10 text-sm font-bold">
-                <i data-lucide="arrow-left" class="w-4 h-4"></i> BACK TO VAULT
-            </button>
-            <div id="active-query-label" class="text-white/40 text-xs font-mono uppercase tracking-widest px-4 border-l border-white/10">Searching Brave...</div>
-        </nav>
-        <iframe id="search-frame" class="w-full flex-1 border-none" src=""></iframe>
-    </div>
+    <aside id="settings-sidebar">
+        <div class="flex justify-between items-center mb-10">
+            <h3 class="text-xl font-bold uppercase tracking-tighter">Preferences</h3>
+            <button onclick="toggleSettings()" class="text-white/40 hover:text-white"><i data-lucide="x"></i></button>
+        </div>
 
-    <aside id="settings-panel" class="fixed top-0 right-0 h-full w-80 p-8 shadow-2xl border-l border-white/10">
-        <h3 class="text-xl font-bold mb-8">Environment</h3>
-        <select class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-sm text-white" onchange="updateVar('--bg-gradient', this.value)">
-            <option value="radial-gradient(circle at top left, #1a1c2c 0%, #0a0a0f 100%)">Cyber Night</option>
-            <option value="linear-gradient(135deg, #434343 0%, #000000 100%)">Stealth Black</option>
-        </select>
-        <button onclick="toggleSettings()" class="mt-8 w-full p-3 bg-white/5 rounded-xl border border-white/10 font-bold">CLOSE</button>
+        <div class="space-y-8">
+            <div>
+                <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-3">Environment</label>
+                <select id="bgSelect" onchange="updateVar('--bg-gradient', this.value)" class="w-full bg-white/10 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-white/30">
+                    <option value="radial-gradient(circle at top left, #1a1c2c 0%, #0a0a0f 100%)">Cyber Night</option>
+                    <option value="linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)">Deep Space</option>
+                    <option value="linear-gradient(135deg, #000000 0%, #434343 100%)">Stealth</option>
+                    <option value="linear-gradient(135deg, #1e3a8a 0%, #1e1b4b 100%)">Midnight Ocean</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-3">Accent Theme</label>
+                <div class="flex gap-3">
+                    <button onclick="updateVar('--accent-color', '#ff5100')" class="w-9 h-9 rounded-xl bg-[#ff5100] border border-white/10"></button>
+                    <button onclick="updateVar('--accent-color', '#a855f7')" class="w-9 h-9 rounded-xl bg-purple-500 border border-white/10"></button>
+                    <button onclick="updateVar('--accent-color', '#3b82f6')" class="w-9 h-9 rounded-xl bg-blue-500 border border-white/10"></button>
+                    <button onclick="updateVar('--accent-color', '#10b981')" class="w-9 h-9 rounded-xl bg-emerald-500 border border-white/10"></button>
+                </div>
+            </div>
+
+            <div>
+                <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-3">Glass Blur</label>
+                <input type="range" min="0" max="40" value="16" class="w-full custom-range" oninput="updateVar('--glass-blur', this.value + 'px')">
+            </div>
+
+            <div>
+                <label class="text-[10px] font-bold text-white/40 uppercase tracking-widest block mb-3">Transparency</label>
+                <input type="range" min="0.01" max="0.25" step="0.01" value="0.05" class="w-full custom-range" oninput="updateVar('--glass-opacity', this.value)">
+            </div>
+        </div>
     </aside>
 
     <script>
         lucide.createIcons();
 
-        // Search Logic
-        const dashInput = document.getElementById('dash-search-input');
-        const searchView = document.getElementById('search-view');
-        const dashView = document.getElementById('main-dashboard');
-        const searchFrame = document.getElementById('search-frame');
+        // Persistent Settings Logic
+        const defaultSettings = {
+            '--bg-gradient': 'radial-gradient(circle at top left, #1a1c2c 0%, #0a0a0f 100%)',
+            '--accent-color': '#ff5100',
+            '--glass-blur': '16px',
+            '--glass-opacity': '0.05'
+        };
 
-        dashInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                const query = dashInput.value;
-                if (query.trim() !== "") {
-                    openSearch(query);
-                }
+        // Initialize from LocalStorage
+        function init() {
+            Object.keys(defaultSettings).forEach(key => {
+                const saved = localStorage.getItem(key);
+                updateVar(key, saved || defaultSettings[key], false);
+            });
+            // Update select dropdown to match saved background
+            const currentBg = localStorage.getItem('--bg-gradient');
+            if(currentBg) document.getElementById('bgSelect').value = currentBg;
+        }
+
+        function updateVar(name, value, save = true) {
+            document.documentElement.style.setProperty(name, value);
+            if (name === '--bg-gradient') {
+                document.body.style.background = value + " fixed";
             }
-        });
-
-        function openSearch(query) {
-            // Encode the query for Brave Search
-            const searchUrl = `https://search.brave.com/search?q=${encodeURIComponent(query)}`;
-            searchFrame.src = searchUrl;
-            
-            // UI Transitions
-            searchView.classList.add('active');
-            dashView.classList.add('hidden-view');
-            document.getElementById('active-query-label').innerText = `QUERY: ${query}`;
+            if(save) localStorage.setItem(name, value);
         }
 
-        function closeSearch() {
-            searchView.classList.remove('active');
-            dashView.classList.remove('hidden-view');
-            searchFrame.src = ""; // Stop the iframe loading
+        function toggleSettings() {
+            document.getElementById('settings-sidebar').classList.toggle('open');
         }
 
-        // Global Setup
-        function updateTime() {
+        function updateClock() {
             const now = new Date();
-            const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('time-display').innerHTML = timeStr;
+            document.getElementById('clock').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         }
-        setInterval(updateTime, 1000);
-        updateTime();
 
-        function toggleSettings() { document.getElementById('settings-panel').classList.toggle('open'); }
-        function updateVar(name, val) { document.documentElement.style.setProperty(name, val); }
+        setInterval(updateClock, 1000);
+        updateClock();
+        init();
     </script>
 </body>
 </html>
