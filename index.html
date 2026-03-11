@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vault Portal | Mobile Fixed</title>
+    <title>Vault Portal | Internal Search</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -14,7 +14,6 @@
             --glass-blur: 16px;
             --glass-opacity: 0.03;
             --accent-color: #ff5100; 
-            --border-opacity: 0.08;
             --tile-roundness: 2rem;
         }
 
@@ -22,12 +21,7 @@
             background-image: var(--bg-gradient);
             background-attachment: fixed;
             min-height: 100vh;
-            /* FIX: Allow vertical scroll, hide horizontal jitter */
-            overflow-y: auto;
-            overflow-x: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            overflow: hidden; /* We handle scrolling inside the search view */
             font-family: 'Plus Jakarta Sans', sans-serif;
             color: white;
             transition: background-image 0.5s ease;
@@ -37,20 +31,31 @@
             background: rgba(255, 255, 255, var(--glass-opacity));
             backdrop-filter: blur(var(--glass-blur));
             -webkit-backdrop-filter: blur(var(--glass-blur));
-            border: 1px solid rgba(255, 255, 255, var(--border-opacity));
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: var(--tile-roundness);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .bento-card:hover {
-            transform: scale(1.01);
-            border-color: var(--accent-color);
-            box-shadow: 0 0 30px -10px var(--accent-color);
+        /* Search View Transition */
+        #search-view {
+            transform: translateY(100%);
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #000;
+        }
+        #search-view.active { transform: translateY(0); }
+
+        #main-dashboard {
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+        #main-dashboard.hidden-view {
+            opacity: 0;
+            transform: scale(0.95);
+            pointer-events: none;
         }
 
         #settings-panel {
             transform: translateX(100%);
-            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.4s ease;
             background: rgba(10, 10, 15, 0.95);
             backdrop-filter: blur(20px);
             z-index: 100;
@@ -58,94 +63,111 @@
         #settings-panel.open { transform: translateX(0); }
     </style>
 </head>
-<body class="p-6 md:p-12">
+<body class="flex items-center justify-center">
 
-    <div class="max-w-6xl w-full my-auto">
-        <header class="flex justify-between items-end mb-8 px-2">
+    <div id="main-dashboard" class="max-w-6xl w-full p-6 md:p-12 z-10">
+        <header class="flex justify-between items-end mb-8">
             <div>
-                <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2">Vault Portal</h1>
-                <p id="time-display" class="text-white/40 font-mono text-sm font-medium tracking-wider uppercase"></p>
+                <h1 class="text-4xl font-extrabold tracking-tight mb-2">Vault Portal</h1>
+                <p id="time-display" class="text-white/40 font-mono text-sm tracking-wider uppercase"></p>
             </div>
-            <button onclick="toggleSettings()" class="p-3 bg-white/5 rounded-full border border-white/10 group">
-                <i data-lucide="settings" class="w-6 h-6 group-hover:rotate-90 transition-transform duration-500"></i>
+            <button onclick="toggleSettings()" class="p-3 bg-white/5 rounded-full border border-white/10">
+                <i data-lucide="settings" class="w-6 h-6"></i>
             </button>
         </header>
 
-        <div id="grid-container" class="grid grid-cols-1 md:grid-cols-6 md:grid-rows-4 gap-4 md:gap-5 h-auto">
-            
-            <div class="bento-card md:col-span-6 p-6 flex items-center gap-4 group">
-                <i data-lucide="search" class="w-6 h-6 text-[#ff5100] ml-2"></i>
-                <form action="https://search.brave.com/search" method="GET" class="flex-1">
-                    <input type="text" name="q" placeholder="Search Brave..." 
-                           class="w-full bg-transparent border-none py-2 text-xl focus:outline-none placeholder-white/20">
-                </form>
+        <div class="grid grid-cols-1 md:grid-cols-6 gap-5 h-auto">
+            <div class="bento-card md:col-span-6 p-6 flex items-center gap-4 group cursor-pointer" onclick="focusSearch()">
+                <i data-lucide="search" class="w-6 h-6 text-[#ff5100]"></i>
+                <input id="dash-search-input" type="text" placeholder="Search with Brave..." 
+                       class="w-full bg-transparent border-none py-2 text-xl focus:outline-none placeholder-white/20">
+                <span class="hidden md:block text-[10px] font-bold py-1 px-3 rounded-full border border-[#ff5100]/30 text-[#ff5100]">PRESS ENTER</span>
             </div>
 
-            <a href="https://proton.me" class="bento-card md:col-span-3 md:row-span-2 p-8 md:p-10 flex flex-col justify-between group min-h-[250px]">
-                <div class="w-16 h-16 bg-purple-500/20 rounded-2xl flex items-center justify-center border border-purple-500/30">
-                    <i data-lucide="shield-check" class="text-purple-400 w-10 h-10"></i>
-                </div>
-                <div>
-                    <h2 class="text-3xl font-bold mb-2">Proton</h2>
-                    <p class="text-white/50 text-lg">Identity & Mail</p>
-                </div>
+            <a href="https://proton.me" class="bento-card md:col-span-3 p-8 flex flex-col justify-between min-h-[200px]">
+                <div class="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center"><i data-lucide="shield" class="text-purple-400"></i></div>
+                <h2 class="text-2xl font-bold">Proton Mail</h2>
             </a>
-
-            <a href="https://drive.proton.me" class="bento-card md:col-span-3 p-6 flex items-center gap-6">
-                <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center border border-blue-500/30">
-                    <i data-lucide="hard-drive" class="text-blue-400 w-6 h-6"></i>
-                </div>
-                <div class="flex-1">
-                    <h2 class="font-bold text-lg">Cloud Vault</h2>
-                    <p class="text-white/40 text-xs">drive.proton.me</p>
-                </div>
+            <a href="https://drive.proton.me" class="bento-card md:col-span-3 p-8 flex items-center gap-6">
+                <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center"><i data-lucide="hard-drive" class="text-blue-400"></i></div>
+                <h2 class="text-xl font-bold">Cloud Vault</h2>
             </a>
-
-            <a href="https://ente.io" class="bento-card md:col-span-1.5 p-6 flex flex-col justify-center items-center group min-h-[150px]">
-                <i data-lucide="image" class="text-orange-400 w-8 h-8 mb-4"></i>
-                <span class="font-bold">Photos</span>
+            <a href="https://ente.io" class="bento-card md:col-span-3 p-8 flex items-center gap-4">
+                <i data-lucide="image" class="text-orange-400"></i>
+                <span class="font-bold">Ente Photos</span>
             </a>
-
-            <a href="https://auth.ente.io" class="bento-card md:col-span-1.5 p-6 flex flex-col justify-center items-center group min-h-[150px]">
-                <i data-lucide="key-round" class="text-cyan-400 w-8 h-8 mb-4"></i>
-                <span class="font-bold">2FA Auth</span>
-            </a>
-
-            <a href="https://lumo.proton.me" class="bento-card md:col-span-6 p-8 flex items-center justify-between group">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center border border-indigo-500/30">
-                        <i data-lucide="sparkles" class="text-indigo-400 w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-lg font-extrabold italic">Lumo Intelligence</h2>
-                        <p class="text-white/40 text-sm">Secure workspace</p>
-                    </div>
-                </div>
-                <i data-lucide="arrow-up-right" class="w-5 h-5 text-indigo-300"></i>
+            <a href="https://lumo.proton.me" class="bento-card md:col-span-3 p-8 flex items-center gap-4">
+                <i data-lucide="sparkles" class="text-indigo-400"></i>
+                <span class="font-bold">Lumo AI</span>
             </a>
         </div>
     </div>
 
-    <aside id="settings-panel" class="fixed top-0 right-0 h-full w-80 p-8 shadow-2xl border-l border-white/10 overflow-y-auto">
-        <div class="flex justify-between items-center mb-8">
-            <h3 class="text-xl font-bold">Portal Setup</h3>
-            <button onclick="toggleSettings()"><i data-lucide="x" class="w-6 h-6"></i></button>
-        </div>
-        </aside>
+    <div id="search-view" class="fixed inset-0 z-50 flex flex-col">
+        <nav class="p-4 bg-black/80 border-b border-white/10 backdrop-blur-md flex items-center gap-4">
+            <button onclick="closeSearch()" class="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors border border-white/10 text-sm font-bold">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> BACK TO VAULT
+            </button>
+            <div id="active-query-label" class="text-white/40 text-xs font-mono uppercase tracking-widest px-4 border-l border-white/10">Searching Brave...</div>
+        </nav>
+        <iframe id="search-frame" class="w-full flex-1 border-none" src=""></iframe>
+    </div>
+
+    <aside id="settings-panel" class="fixed top-0 right-0 h-full w-80 p-8 shadow-2xl border-l border-white/10">
+        <h3 class="text-xl font-bold mb-8">Environment</h3>
+        <select class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-sm text-white" onchange="updateVar('--bg-gradient', this.value)">
+            <option value="radial-gradient(circle at top left, #1a1c2c 0%, #0a0a0f 100%)">Cyber Night</option>
+            <option value="linear-gradient(135deg, #434343 0%, #000000 100%)">Stealth Black</option>
+        </select>
+        <button onclick="toggleSettings()" class="mt-8 w-full p-3 bg-white/5 rounded-xl border border-white/10 font-bold">CLOSE</button>
+    </aside>
 
     <script>
         lucide.createIcons();
+
+        // Search Logic
+        const dashInput = document.getElementById('dash-search-input');
+        const searchView = document.getElementById('search-view');
+        const dashView = document.getElementById('main-dashboard');
+        const searchFrame = document.getElementById('search-frame');
+
+        dashInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                const query = dashInput.value;
+                if (query.trim() !== "") {
+                    openSearch(query);
+                }
+            }
+        });
+
+        function openSearch(query) {
+            // Encode the query for Brave Search
+            const searchUrl = `https://search.brave.com/search?q=${encodeURIComponent(query)}`;
+            searchFrame.src = searchUrl;
+            
+            // UI Transitions
+            searchView.classList.add('active');
+            dashView.classList.add('hidden-view');
+            document.getElementById('active-query-label').innerText = `QUERY: ${query}`;
+        }
+
+        function closeSearch() {
+            searchView.classList.remove('active');
+            dashView.classList.remove('hidden-view');
+            searchFrame.src = ""; // Stop the iframe loading
+        }
+
+        // Global Setup
         function updateTime() {
             const now = new Date();
             const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const dateStr = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' });
-            document.getElementById('time-display').innerHTML = `${dateStr} <span class="mx-3 opacity-20">|</span> ${timeStr}`;
+            document.getElementById('time-display').innerHTML = timeStr;
         }
         setInterval(updateTime, 1000);
         updateTime();
+
         function toggleSettings() { document.getElementById('settings-panel').classList.toggle('open'); }
         function updateVar(name, val) { document.documentElement.style.setProperty(name, val); }
-        function setTheme(color) { updateVar('--accent-color', color); }
     </script>
 </body>
 </html>
