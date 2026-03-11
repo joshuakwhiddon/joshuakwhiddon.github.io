@@ -3,101 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Personal Portal</title>
+    <title>Secure Gateway</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: radial-gradient(circle at top left, #1a1c2c 0%, #0a0a0f 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: white;
         }
-        .glass {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+        .bento-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 2rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+            position: relative;
         }
-        .glass:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+
+        .bento-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+
+        .bento-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+            transform: scale(1.02);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #10b981;
         }
     </style>
 </head>
-<body class="p-6 md:p-12">
+<body class="p-4 md:p-8">
 
-    <div class="max-w-6xl w-full">
-        <header class="mb-10 text-white">
-            <h1 class="text-4xl font-bold tracking-tight">Welcome Back.</h1>
-            <p class="opacity-80">Your digital ecosystem, all in one place.</p>
+    <div class="max-w-5xl w-full">
+        <header class="flex justify-between items-end mb-12 px-2">
+            <div>
+                <h1 class="text-3xl font-extrabold tracking-tight mb-1">Encrypted Vault</h1>
+                <p class="text-white/40 font-medium">Verified Session &bull; Oklahoma City Node</p>
+            </div>
+            <div class="flex items-center gap-3 bg-white/5 px-4 py-2 rounded-full border border-white/10">
+                <div class="status-dot"></div>
+                <span class="text-xs font-bold uppercase tracking-widest text-white/60">System Online</span>
+            </div>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-4 grid-rows-none md:grid-rows-3 gap-4 h-full">
+        <div class="grid grid-cols-1 md:grid-cols-6 md:grid-rows-3 gap-5">
             
-            <a href="https://github.com" class="glass rounded-3xl p-8 md:col-span-2 md:row-span-2 flex flex-col justify-between group">
-                <div class="flex justify-between items-start">
-                    <i class="fa-brands fa-github text-5xl text-white opacity-90"></i>
-                    <i class="fa-solid fa-arrow-up-right-from-square text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+            <a href="https://proton.me" class="bento-card md:col-span-3 md:row-span-2 p-8 flex flex-col justify-between group">
+                <div>
+                    <div class="w-14 h-14 bg-purple-500/20 rounded-2xl flex items-center justify-center mb-6">
+                        <i data-lucide="shield-check" class="text-purple-400 w-8 h-8"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-2">Proton Mail</h2>
+                    <p class="text-white/50 leading-relaxed">Encrypted communication and identity management.</p>
+                </div>
+                <div class="flex items-center text-purple-400 font-semibold gap-2">
+                    Open Inbox <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </a>
+
+            <a href="https://drive.proton.me" class="bento-card md:col-span-3 p-6 flex items-center gap-6 group">
+                <div class="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                    <i data-lucide="hard-drive" class="text-blue-400 w-6 h-6"></i>
                 </div>
                 <div>
-                    <h2 class="text-white text-2xl font-bold mb-2">Development</h2>
-                    <p class="text-white/70">Check repositories, pull requests, and contributions.</p>
+                    <h2 class="font-bold text-lg">Proton Drive</h2>
+                    <p class="text-white/40 text-sm">Secure Cloud Storage</p>
                 </div>
             </a>
 
-            <a href="https://youtube.com" class="glass rounded-3xl p-6 md:col-span-2 flex items-center gap-6 group">
-                <div class="bg-red-500/20 p-4 rounded-2xl">
-                    <i class="fa-brands fa-youtube text-3xl text-red-400"></i>
-                </div>
-                <div>
-                    <h2 class="text-white text-lg font-bold">Watch</h2>
-                    <p class="text-white/60 text-sm">Latest uploads & subs.</p>
-                </div>
+            <a href="https://ente.io" class="bento-card md:col-span-1.5 p-6 flex flex-col justify-center items-center text-center group">
+                <i data-lucide="image" class="text-orange-400 w-8 h-8 mb-4"></i>
+                <span class="font-bold text-sm">Ente Photos</span>
             </a>
 
-            <a href="https://gmail.com" class="glass rounded-3xl p-6 flex flex-col justify-center items-center text-center group">
-                <i class="fa-solid fa-envelope text-3xl text-blue-300 mb-3"></i>
-                <span class="text-white font-medium">Email</span>
+            <a href="https://auth.ente.io" class="bento-card md:col-span-1.5 p-6 flex flex-col justify-center items-center text-center group">
+                <i data-lucide="key-round" class="text-cyan-400 w-8 h-8 mb-4"></i>
+                <span class="font-bold text-sm">Ente Auth</span>
             </a>
 
-            <a href="https://twitter.com" class="glass rounded-3xl p-6 flex flex-col justify-center items-center text-center group">
-                <i class="fa-brands fa-x-twitter text-3xl text-white mb-3"></i>
-                <span class="text-white font-medium">Social</span>
-            </a>
-
-            <a href="https://notion.so" class="glass rounded-3xl p-6 md:col-span-2 flex justify-between items-center group">
+            <a href="https://lumo.proton.me" class="bento-card md:col-span-4 p-6 flex items-center justify-between group">
                 <div class="flex items-center gap-4">
-                    <i class="fa-solid fa-note-sticky text-2xl text-yellow-300"></i>
-                    <div class="text-white">
-                        <h2 class="font-bold">Notion</h2>
-                        <p class="text-white/60 text-xs">Knowledge base & plans.</p>
+                    <div class="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center">
+                        <i data-lucide="sparkles" class="text-indigo-400 w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-lg">Lumo AI</h2>
+                        <p class="text-white/40 text-sm">Private Intelligence & Writing</p>
                     </div>
                 </div>
-                <div class="h-2 w-16 bg-white/20 rounded-full overflow-hidden">
-                    <div class="h-full bg-yellow-300 w-3/4"></div>
+                <div class="px-3 py-1 bg-indigo-500/10 border border-indigo-500/30 rounded-lg text-[10px] font-bold text-indigo-300 uppercase tracking-tighter">
+                    Secure AI
                 </div>
             </a>
 
-            <a href="https://spotify.com" class="glass rounded-3xl p-6 md:row-span-1 flex items-center gap-4 group">
-                <i class="fa-brands fa-spotify text-4xl text-green-400"></i>
-                <div class="text-white">
-                    <h2 class="font-bold text-sm">Spotify</h2>
-                    <p class="text-white/60 text-xs">Currently Playing</p>
-                </div>
-            </a>
-
-             <a href="https://pinterest.com" class="glass rounded-3xl p-6 flex flex-col justify-between group">
-                <i class="fa-brands fa-pinterest text-2xl text-red-500"></i>
-                <span class="text-white font-medium text-sm">Moodboard</span>
+            <a href="#" class="bento-card md:col-span-2 p-6 flex items-center justify-center bg-white/5 group">
+                <i data-lucide="settings" class="text-white/20 group-hover:rotate-90 transition-transform duration-700"></i>
             </a>
 
         </div>
     </div>
 
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
 </body>
 </html>
